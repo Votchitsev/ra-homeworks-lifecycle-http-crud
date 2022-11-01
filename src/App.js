@@ -10,7 +10,12 @@ function App() {
   const content = useRef();
 
   let [notes, setNotes] = useState([]);
-  let [query, setQuery] = useState();
+  let [lastRerponse, setLastResponse] = useState();
+
+  const deleteQuery = (id) => {
+    request('DELETE', id)
+      .then(result => setLastResponse(result))
+  }
 
   const getQuery = () => {
     request('GET')
@@ -18,21 +23,25 @@ function App() {
       .then(result => setNotes(result));
   }
 
-  useEffect(getQuery, [query]);
+  useEffect(getQuery, [lastRerponse]);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
     request('POST', v1(), content.current.value)
-      .then(_ => {
-        setQuery('GET');
+      .then(result => {
+        setLastResponse(result);
         content.current.value = '';
       });
   }
 
   return (
     <div className="App">
-      <h1>Notes <span className='refresh'></span></h1>
-      <div className='notes-container'>{ notes.map(note => <Note note={ note } key={ note.id }/>)}</div>
+      <h1>Notes <span className='refresh' onClick={ getQuery }>{'обновить'}</span></h1>
+      <div className='notes-container'>{ notes.map(note => <Note 
+        note={ note } 
+        id={ note.id } 
+        key={ note.id } 
+        deleteFunction={ deleteQuery } />)}</div>
       <form className='new-note-form'>
         <input type='text' ref={ content } required></input>
         <input type='submit' value='OK' onClick={ onSubmitHandler }></input>

@@ -25,6 +25,13 @@ function request(method, id = 0, content = null) {
       }
     })
   }
+
+  if (method === 'DELETE') {
+    response = fetch(url + id, {
+      method: 'DELETE',
+    })
+  }
+  
   return response;
 }
 
